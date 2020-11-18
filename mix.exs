@@ -1,4 +1,4 @@
-defmodule Engine.MixProject do
+defmodule Scheduler.MixProject do
   use Mix.Project
 
   def project do
