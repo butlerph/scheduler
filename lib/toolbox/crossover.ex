@@ -15,6 +15,7 @@ defmodule Toolbox.Crossover do
 
     # IO.puts("LOLOL #{inspect(rows)}:#{inspect(cols)}")
 
+    # TODO: Include col crossover point
     row_cx = :random.uniform(rows)
     # col_cx = :random.uniform(cols)
 
