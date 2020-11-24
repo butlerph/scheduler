@@ -6,6 +6,20 @@ defmodule Core.Timetable do
 
   alias Core.Todo
 
+  def from_bit_timetable(timetable) do
+    Enum.map(timetable, fn time_streak ->
+      time_streak
+      |> Enum.with_index()
+      |> Enum.reduce([], fn
+        {1.0, index}, acc ->
+          [index + 1 | acc]
+
+        _, acc ->
+          acc
+      end)
+    end)
+  end
+
   @doc """
   Synchronizes the result of the GA with the todos
   """

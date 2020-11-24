@@ -55,7 +55,7 @@ defmodule Genetic do
   end
 
   defp crossover(population, opts) do
-    cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.interlace/3)
+    cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.horizontal_2d/3)
 
     population
     |> Enum.reduce([], fn {p1, p2}, acc ->
@@ -63,6 +63,13 @@ defmodule Genetic do
 
       [c1 | [c2 | acc]]
     end)
+    |> Enum.map(&repair_chromosome(&1))
+  end
+
+  defp repair_chromosome(chromosome) do
+    # TODO: Repair duplicates
+    # TODO: Repair excess weight
+    chromosome
   end
 
   defp mutation(population, data, opts) do

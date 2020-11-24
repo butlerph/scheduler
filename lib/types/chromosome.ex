@@ -1,6 +1,6 @@
 defmodule Types.Chromosome do
   @type t :: %__MODULE__{
-          genes: Enum.t(),
+          genes: Enum.t() | Matrex.t(),
           size: integer(),
           fitness: number(),
           age: integer()

@@ -9,9 +9,8 @@ defmodule Core.Todo do
   def find_tasks_within_weight([], chosen_todos, _, true), do: {[], chosen_todos}
 
   def find_tasks_within_weight([_ | _] = todos, chosen_todos, max_weight, true) do
-    eligible_todos =
-      todos
-      |> Enum.filter(fn %{weight: w} -> w <= max_weight end)
+    # Get all todos that are within `max_weight`.
+    eligible_todos = Enum.filter(todos, fn %{weight: w} -> w <= max_weight end)
 
     {new_todos, new_weight, new_chosen_todos, continue?} =
       case eligible_todos do

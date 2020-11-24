@@ -4,8 +4,9 @@ defmodule Toolbox.Mutation do
 
   # TODO: Remove after proper mutation function is created.
   def scramble(chromosome, _data) do
-    genes = Timetable.shuffle(chromosome.genes)
+    # genes = Timetable.shuffle(chromosome.genes)
 
-    %{chromosome | genes: genes}
+    # %{chromosome | genes: genes}
+    chromosome
   end
 end

@@ -9,9 +9,9 @@ defmodule TTP do
 
   @impl true
   @spec genotype(map()) :: Chromosome.t()
-  def genotype(%{todos: todos, time_streak_weights: tsw} = data)
+  def genotype(%{todos: todos, time_streak_weights: tsw, size: size} = data)
       when is_map(data) do
-    {_, genes} =
+    {_, timetable} =
       Enum.reduce(tsw, {todos, []}, fn
         streak_weight, {todos_left, chosen_todos} ->
           result = Todo.find_tasks_within_weight(todos_left, streak_weight)
@@ -20,37 +20,42 @@ defmodule TTP do
           {todos_left, chosen_todos ++ [new_chosen]}
       end)
 
-    %Chromosome{genes: genes, size: length(genes)}
+    genes =
+      Enum.map(timetable, fn time_streak ->
+        todo_slots =
+          Stream.repeatedly(fn -> 0 end)
+          |> Enum.take(size)
+
+        Enum.reduce(time_streak, todo_slots, fn todo_id, slots ->
+          List.replace_at(slots, todo_id - 1, 1)
+        end)
+      end)
+      |> Matrex.new()
+
+    %Chromosome{genes: genes, size: 0}
   end
 
   @impl true
-  def fitness_function(chromosome, %{todos: todos, time_streak_weights: tsw}) do
-    length = length(chromosome.genes)
+  def fitness_function(chromosome, %{todos: todos}) do
+    {rows, cols} = Matrex.size(chromosome.genes)
 
-    chromosome.genes
-    |> Enum.with_index()
-    |> Enum.map(fn {streak, streak_index} ->
-      streak_weight = Enum.at(tsw, streak_index, 1)
-      # streak_length = length(streak)
+    for row <- 1..rows do
+      for col <- 1..cols do
+        # 0 False/1 True
+        %{priority: p, weight: w} =
+          todos
+          |> Enum.find(fn t -> t.id == col end)
 
-      streak
-      |> Enum.with_index()
-      |> Enum.map(fn {todo_id, _todo_index} ->
-        todo = Todo.get_todo(todos, todo_id)
-
-        todo.priority * todo.weight / 100
-      end)
+        (rows + 1 - row) * (Matrex.at(chromosome.genes, row, col) * :math.pow(p, w / 60))
+      end
       |> Enum.sum()
-      |> Kernel./(streak_weight)
-      |> :math.pow(length + 1 - streak_index)
-    end)
+    end
     |> Enum.sum()
-    |> Kernel./(length)
   end
 
   @impl true
   def terminate?([_best | _], generation, temperature) do
     # temperature < 25 || generation == 1000
-    generation == 5000
+    generation == 1000
   end
 end
