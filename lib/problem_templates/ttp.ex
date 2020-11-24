@@ -11,6 +11,7 @@ defmodule TTP do
   @spec genotype(map()) :: Chromosome.t()
   def genotype(%{todos: todos, time_streak_weights: tsw, size: size} = data)
       when is_map(data) do
+    # TODO: Find a better way to generate genotype without list -> matrix.
     {_, timetable} =
       Enum.reduce(tsw, {todos, []}, fn
         streak_weight, {todos_left, chosen_todos} ->
