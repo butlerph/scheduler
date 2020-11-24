@@ -5,6 +5,7 @@ defmodule Scheduler do
   alias Types.Todo
 
   def todos do
+    # TODO: Make a matrix version to hold priority & weight
     [
       %Todo{id: 1, name: "CS280: Test Section 5", weight: 180, priority: 4},
       %Todo{id: 2, name: "CS210: Finish Week #1 HW", weight: 180, priority: 4},
@@ -20,6 +21,7 @@ defmodule Scheduler do
   end
 
   def time_streaks do
+    # TODO: Make a matrix version to hold streak duration
     [
       {~N[2020-11-18 09:00:00.00], ~N[2020-11-18 12:00:00.00]},
       {~N[2020-11-18 13:00:00.00], ~N[2020-11-18 20:00:00.00]},

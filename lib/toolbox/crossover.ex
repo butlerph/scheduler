@@ -1,7 +1,16 @@
 defmodule Toolbox.Crossover do
   alias Types.Chromosome
 
-  def horizontal_2d(p1, p2, _data) do
+  @doc """
+  2D substring crossover
+  """
+  def substring(p1, p2, data) do
+    # TODO: Add vertical crossover
+    # TODO: 50-50 for horizontal and vertical
+    horizontal(p1, p2, data)
+  end
+
+  def horizontal(p1, p2, _data) do
     {rows, cols} = Matrex.size(p1.genes)
 
     # IO.puts("LOLOL #{inspect(rows)}:#{inspect(cols)}")
@@ -30,6 +39,5 @@ defmodule Toolbox.Crossover do
       end
 
     {%Chromosome{genes: c1, size: 0}, %Chromosome{genes: c2, size: 0}}
-    # {p1, p2}
   end
 end

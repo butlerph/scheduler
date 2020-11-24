@@ -1,5 +1,6 @@
 defmodule Genetic do
   alias Types.Chromosome
+  alias Toolbox.Repair
 
   @doc """
   Runs the genetic algorithm given data and a problem.
@@ -55,7 +56,7 @@ defmodule Genetic do
   end
 
   defp crossover(population, opts) do
-    cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.horizontal_2d/3)
+    cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.substring/3)
 
     population
     |> Enum.reduce([], fn {p1, p2}, acc ->
@@ -67,9 +68,11 @@ defmodule Genetic do
   end
 
   defp repair_chromosome(chromosome) do
-    # TODO: Repair duplicates
-    # TODO: Repair excess weight
     chromosome
+    |> Repair.remove_duplicates()
+
+    # TODO: Repair excess weight
+    # TODO: First-Fit Decreasing
   end
 
   defp mutation(population, data, opts) do
