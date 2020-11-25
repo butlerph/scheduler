@@ -72,7 +72,7 @@ defmodule Genetic do
     |> Repair.remove_duplicates()
 
     # TODO: Repair excess weight
-    # TODO: First-Fit Decreasing
+    # TODO: Reassign unused todos First-Fit Decreasing
   end
 
   defp mutation(population, data, opts) do
