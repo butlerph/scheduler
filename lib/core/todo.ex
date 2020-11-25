@@ -126,14 +126,4 @@ defmodule Core.Todo do
       Matrex.set(acc, 1, id, 1)
     end)
   end
-
-  def list_unused_todos(genes, all_todos) do
-    genes
-    |> Matrex.to_list_of_lists()
-    |> Timetable.from_bit_timetable()
-    |> List.flatten()
-    |> MapSet.new()
-    |> (fn a -> MapSet.difference(MapSet.new(all_todos), a) end).()
-    |> MapSet.to_list()
-  end
 end

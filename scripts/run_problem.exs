@@ -12,7 +12,8 @@ todo_priorities = Core.Todo.to_priority_matrix(todos)
 data = %{
   todo_ids: Enum.map(todos, fn %{id: id} -> id end),
   todos: todos,
-  size: length(todos),
+  todo_size: length(todos),
+  ts_size: length(time_streaks),
   time_streaks: time_streaks,
   time_streak_weights: time_streak_weights,
   durations: todo_durations,

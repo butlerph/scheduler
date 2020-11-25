@@ -4,6 +4,9 @@ defmodule Scheduler do
   """
   alias Types.Todo
 
+  @doc """
+  Sample data for todos
+  """
   def todos do
     # TODO: Make a matrix version to hold priority & weight
     [
@@ -20,8 +23,10 @@ defmodule Scheduler do
     ]
   end
 
+  @doc """
+  Sample data for time streaks
+  """
   def time_streaks do
-    # TODO: Make a matrix version to hold streak duration
     [
       {~N[2020-11-18 09:00:00.00], ~N[2020-11-18 12:00:00.00]},
       {~N[2020-11-18 13:00:00.00], ~N[2020-11-18 20:00:00.00]},

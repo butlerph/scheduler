@@ -74,7 +74,7 @@ defmodule Toolbox.Repair do
       ) do
     unused_todos =
       genes
-      |> Todo.list_unused_todos(all_ids)
+      |> Timetable.list_unused_todos(all_ids)
       |> Enum.sort_by(
         fn id ->
           priority = Matrex.at(p, 1, id)
@@ -85,7 +85,6 @@ defmodule Toolbox.Repair do
         &>=/2
       )
 
-    # Check each time streak if there's enough allowance for more todos
     new_genes = Timetable.populate(genes, unused_todos, data)
 
     %{chromosome | genes: new_genes}

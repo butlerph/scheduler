@@ -57,7 +57,6 @@ defmodule Genetic do
 
   defp crossover(population, data, opts) do
     cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.substring/3)
-    # repair = Keyword.get(opts, :repair_type, &Toolbox.Crossover.substring/3)
 
     population
     |> Enum.reduce([], fn {p1, p2}, acc ->

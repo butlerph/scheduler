@@ -9,7 +9,6 @@ defmodule Core.Timetable do
   @doc """
   Populates the matrix with todos based on First-Fit decreasing order.
   """
-  #! BUG: It doesn't completely populate the timetable even if a todo fits
   def populate(
         timetable,
         unassigned_todos,
@@ -17,38 +16,35 @@ defmodule Core.Timetable do
       ) do
     {rows, _cols} = Matrex.size(timetable)
 
-    Enum.reduce(1..rows, {timetable, unassigned_todos}, fn
-      row, {new_tt, remaining_todos} ->
-        max_capacity = Matrex.at(tsw, 1, rows)
-        current_streak_weight = get_streak_weight(new_tt, row, data)
-        allowance = max_capacity - current_streak_weight
+    Enum.reduce(unassigned_todos, timetable, fn
+      todo_id, new_tt ->
+        todo_weight = Matrex.at(d, 1, todo_id)
 
-        {new_tt, _, remaining_todos} =
-          Enum.reduce_while(remaining_todos, {new_tt, allowance, remaining_todos}, fn
-            _, {_, 0, _} = acc ->
-              {:halt, acc}
+        Enum.reduce_while(1..rows, new_tt, fn row_num, new_tt ->
+          max_capacity = Matrex.at(tsw, 1, row_num)
+          current_streak_weight = get_streak_weight(new_tt, row_num, data)
+          allowance = max_capacity - current_streak_weight
 
-            todo_id, {new_tt, remaining_weight, remaining_todos} = acc ->
-              todo_weight = Matrex.at(d, 1, todo_id)
+          cond do
+            todo_weight <= allowance ->
+              new_tt = Matrex.set(new_tt, row_num, todo_id, 1)
+              {:halt, new_tt}
 
-              new_acc =
-                cond do
-                  todo_weight <= remaining_weight ->
-                    new_tt = Matrex.set(new_tt, row, todo_id, 1)
-                    new_remaining_todos = List.delete(remaining_todos, todo_id)
-
-                    {new_tt, remaining_weight - todo_weight, new_remaining_todos}
-
-                  true ->
-                    acc
-                end
-
-              {:cont, new_acc}
-          end)
-
-        {new_tt, remaining_todos}
+            true ->
+              {:cont, new_tt}
+          end
+        end)
     end)
-    |> elem(0)
+  end
+
+  def list_unused_todos(timetable, all_todos) do
+    timetable
+    |> Matrex.to_list_of_lists()
+    |> from_bit_timetable()
+    |> List.flatten()
+    |> MapSet.new()
+    |> (fn a -> MapSet.difference(MapSet.new(all_todos), a) end).()
+    |> MapSet.to_list()
   end
 
   def from_bit_timetable(timetable) do

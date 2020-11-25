@@ -5,35 +5,20 @@ defmodule TTP do
 
   @behaviour Problem
   alias Types.Chromosome
-  alias Core.Todo
+  alias Core.Timetable
 
   @impl true
   @spec genotype(map()) :: Chromosome.t()
-  def genotype(%{todos: todos, time_streak_weights: tsw, size: size} = data)
+  def genotype(%{ts_size: ts_size, todo_size: todo_size} = data)
       when is_map(data) do
-    # TODO: Find a better way to generate genotype without list -> matrix.
-    {_, timetable} =
-      Enum.reduce(tsw, {todos, []}, fn
-        streak_weight, {todos_left, chosen_todos} ->
-          result = Todo.find_tasks_within_weight(todos_left, streak_weight)
-          {todos_left, new_chosen} = result
-
-          {todos_left, chosen_todos ++ [new_chosen]}
-      end)
-
     genes =
-      Enum.map(timetable, fn time_streak ->
-        todo_slots =
-          Stream.repeatedly(fn -> 0 end)
-          |> Enum.take(size)
+      Timetable.populate(
+        Matrex.zeros(ts_size, todo_size),
+        Enum.shuffle(data.todo_ids),
+        data
+      )
 
-        Enum.reduce(time_streak, todo_slots, fn todo_id, slots ->
-          List.replace_at(slots, todo_id - 1, 1)
-        end)
-      end)
-      |> Matrex.new()
-
-    %Chromosome{genes: genes, size: 0}
+    %Chromosome{genes: genes, size: Matrex.size(genes)}
   end
 
   @impl true
@@ -56,6 +41,5 @@ defmodule TTP do
   @impl true
   def terminate?([_best | _], generation, temperature) do
     temperature < 25 || generation == 1000
-    # generation == 1000
   end
 end
