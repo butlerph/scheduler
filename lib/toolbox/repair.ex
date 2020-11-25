@@ -1,7 +1,12 @@
 defmodule Toolbox.Repair do
   alias Core.Todo
   alias Helpers.MatrixHelper
+  alias Core.Timetable
 
+  @doc """
+  A timetable matrix column should contain at most 1 occurrence of `1.0`.
+  All other occurrences are removed.
+  """
   def remove_duplicates(%{genes: genes} = chromosome) do
     {rows, cols} = Matrex.size(genes)
 
@@ -24,13 +29,15 @@ defmodule Toolbox.Repair do
     %{chromosome | genes: new_genes}
   end
 
+  @doc """
+  If there are any time slots whose todos exceed its capacity, todos will be
+  removed according to lowest fitness.
+  """
   def remove_excess_durations(
         %{genes: genes} = chromosome,
         %{durations: durations, time_streak_weights: tsw} = data
       ) do
     {rows, cols} = Matrex.size(genes)
-    # Remove todos that cause it to exceed.
-    # Should be according to ascending order
 
     new_genes =
       Enum.reduce(1..rows, genes, fn row, new_genes ->
@@ -50,6 +57,36 @@ defmodule Toolbox.Repair do
           new_genes
         end
       end)
+
+    %{chromosome | genes: new_genes}
+  end
+
+  @doc """
+  Attempt to reassign todos through First-Fit decreasing.
+  """
+  def maybe_reassign_todos(
+        %{genes: genes} = chromosome,
+        %{
+          todo_ids: all_ids,
+          durations: d,
+          priorities: p
+        } = data
+      ) do
+    unused_todos =
+      genes
+      |> Todo.list_unused_todos(all_ids)
+      |> Enum.sort_by(
+        fn id ->
+          priority = Matrex.at(p, 1, id)
+          duration = Matrex.at(d, 1, id)
+
+          :math.pow(priority, duration)
+        end,
+        &>=/2
+      )
+
+    # Check each time streak if there's enough allowance for more todos
+    new_genes = Timetable.populate(genes, unused_todos, data)
 
     %{chromosome | genes: new_genes}
   end

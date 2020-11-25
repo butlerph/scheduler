@@ -1,4 +1,6 @@
 defmodule Core.Todo do
+  alias Core.Timetable
+
   @doc """
   Finds a random tasks that can fit the max weight
   """
@@ -76,6 +78,9 @@ defmodule Core.Todo do
     |> Matrex.new()
   end
 
+  @doc """
+  Removes excess todos from the submatrix (represents a row in the Matrix).
+  """
   def remove_excess(streak, duration_to_remove, %{durations: d, priorities: p}) do
     {_rows, cols} = Matrex.size(streak)
 
@@ -120,5 +125,15 @@ defmodule Core.Todo do
     |> Enum.reduce(Matrex.zeros(1, cols), fn id, acc ->
       Matrex.set(acc, 1, id, 1)
     end)
+  end
+
+  def list_unused_todos(genes, all_todos) do
+    genes
+    |> Matrex.to_list_of_lists()
+    |> Timetable.from_bit_timetable()
+    |> List.flatten()
+    |> MapSet.new()
+    |> (fn a -> MapSet.difference(MapSet.new(all_todos), a) end).()
+    |> MapSet.to_list()
   end
 end

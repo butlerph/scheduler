@@ -6,6 +6,51 @@ defmodule Core.Timetable do
 
   alias Core.Todo
 
+  @doc """
+  Populates the matrix with todos based on First-Fit decreasing order.
+  """
+  #! BUG: It doesn't completely populate the timetable even if a todo fits
+  def populate(
+        timetable,
+        unassigned_todos,
+        %{time_streak_weights: tsw, durations: d} = data
+      ) do
+    {rows, _cols} = Matrex.size(timetable)
+
+    Enum.reduce(1..rows, {timetable, unassigned_todos}, fn
+      row, {new_tt, remaining_todos} ->
+        max_capacity = Matrex.at(tsw, 1, rows)
+        current_streak_weight = get_streak_weight(new_tt, row, data)
+        allowance = max_capacity - current_streak_weight
+
+        {new_tt, _, remaining_todos} =
+          Enum.reduce_while(remaining_todos, {new_tt, allowance, remaining_todos}, fn
+            _, {_, 0, _} = acc ->
+              {:halt, acc}
+
+            todo_id, {new_tt, remaining_weight, remaining_todos} = acc ->
+              todo_weight = Matrex.at(d, 1, todo_id)
+
+              new_acc =
+                cond do
+                  todo_weight <= remaining_weight ->
+                    new_tt = Matrex.set(new_tt, row, todo_id, 1)
+                    new_remaining_todos = List.delete(remaining_todos, todo_id)
+
+                    {new_tt, remaining_weight - todo_weight, new_remaining_todos}
+
+                  true ->
+                    acc
+                end
+
+              {:cont, new_acc}
+          end)
+
+        {new_tt, remaining_todos}
+    end)
+    |> elem(0)
+  end
+
   def from_bit_timetable(timetable) do
     Enum.map(timetable, fn time_streak ->
       time_streak
@@ -108,6 +153,23 @@ defmodule Core.Timetable do
         end,
         :desc
       )
+    end)
+  end
+
+  def get_streak_weight(timetable, row, %{durations: d}) do
+    {_, cols} = Matrex.size(timetable)
+
+    Matrex.submatrix(timetable, row..row, 1..cols)
+    |> Enum.with_index()
+    |> Enum.reduce([], fn
+      {1.0, todo_index}, acc ->
+        [todo_index + 1 | acc]
+
+      {0.0, _}, acc ->
+        acc
+    end)
+    |> Enum.reduce(0, fn todo_id, weight_score ->
+      weight_score + Matrex.at(d, 1, todo_id)
     end)
   end
 end

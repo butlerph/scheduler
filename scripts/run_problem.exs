@@ -8,7 +8,9 @@ todo_durations = Core.Todo.to_duration_matrix(todos)
 todo_priorities = Core.Todo.to_priority_matrix(todos)
 
 # Data to be accessed by the GA
+# TODO: Remove unnecessary data
 data = %{
+  todo_ids: Enum.map(todos, fn %{id: id} -> id end),
   todos: todos,
   size: length(todos),
   time_streaks: time_streaks,

@@ -1,4 +1,8 @@
 defmodule Helpers.MatrixHelper do
+  @moduledoc """
+  Convenience functions for dealing with matrices.
+  """
+
   @doc """
   Fuses 2 rows at a crossover point. This assumes both rows have the same
   dimensions.
@@ -28,6 +32,9 @@ defmodule Helpers.MatrixHelper do
     end
   end
 
+  @doc """
+  Fuses two matrices together at the row and column points.
+  """
   def fuse(m1, m2, {row_cx, col_cx}, :rows) do
     case Matrex.size(m1) do
       {1, 1} ->
@@ -44,7 +51,6 @@ defmodule Helpers.MatrixHelper do
             col_cx
           )
 
-        # TODO: Use `update_rows/3`
         cond do
           row_cx == 1 ->
             second_half = (row_cx + 1)..rows
@@ -76,10 +82,16 @@ defmodule Helpers.MatrixHelper do
     end
   end
 
+  @doc """
+  Concatenates multiple rows into one matrix.
+  """
   def concat_rows(rows) when is_list(rows) do
     Matrex.reshape(rows, 1, 1)
   end
 
+  @doc """
+  Updates a row in a matrix with a new row.
+  """
   def update_row(m, row_cx, m_row) do
     {rows, cols} = Matrex.size(m)
 

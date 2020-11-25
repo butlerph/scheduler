@@ -42,7 +42,6 @@ defmodule TTP do
 
     for row <- 1..rows do
       for col <- 1..cols do
-        # 0 False/1 True
         %{priority: p, weight: w} =
           todos
           |> Enum.find(fn t -> t.id == col end)
@@ -56,7 +55,7 @@ defmodule TTP do
 
   @impl true
   def terminate?([_best | _], generation, temperature) do
-    # temperature < 25 || generation == 1000
-    generation == 1000
+    temperature < 25 || generation == 1000
+    # generation == 1000
   end
 end

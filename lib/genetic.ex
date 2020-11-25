@@ -72,10 +72,7 @@ defmodule Genetic do
     chromosome
     |> Repair.remove_duplicates()
     |> Repair.remove_excess_durations(data)
-
-    # TODO: Get the list of unused todos
-    # TODO: Try to reassign
-    # TODO: Reassign unused todos First-Fit Decreasing
+    |> Repair.maybe_reassign_todos(data)
   end
 
   defp mutation(population, data, opts) do
