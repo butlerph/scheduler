@@ -10,7 +10,7 @@ let
 in
 
 mkShell {
-  buildInputs = [git erlang elixir]
+  buildInputs = [git erlang elixir blas blas-reference lapack liblapack]
     ++ optional stdenv.isLinux inotify-tools;
 
     shellHook = ''
