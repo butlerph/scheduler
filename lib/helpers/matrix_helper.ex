@@ -8,7 +8,6 @@ defmodule Helpers.MatrixHelper do
   dimensions.
   """
   def fuse_rows(row_a, row_b, cx_point) do
-    # TODO: Add check if dimensions are the same.
     case Matrex.size(row_a) do
       {1, 1} ->
         row_a

@@ -8,7 +8,6 @@ defmodule Scheduler do
   Sample data for todos
   """
   def todos do
-    # TODO: Make a matrix version to hold priority & weight
     [
       %Todo{id: 1, name: "CS280: Test Section 5", weight: 180, priority: 4},
       %Todo{id: 2, name: "CS210: Finish Week #1 HW", weight: 180, priority: 4},

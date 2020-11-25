@@ -1,8 +1,12 @@
 defmodule Toolbox.Mutation do
-  # alias Core.TimeStreak
-  # alias Core.Timetable
+  use Bitwise
 
-  def scramble(chromosome, _data) do
-    chromosome
+  def bit_flip(%{genes: genes} = chromosome, _data) do
+    {rows, cols} = Matrex.size(genes)
+    row = :random.uniform(rows)
+    col = :random.uniform(cols)
+    flipped_bit = trunc(Matrex.at(genes, row, col)) ^^^ 1
+
+    %{chromosome | genes: Matrex.set(genes, row, col, flipped_bit)}
   end
 end

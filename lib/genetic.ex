@@ -75,13 +75,13 @@ defmodule Genetic do
   end
 
   defp mutation(population, data, opts) do
-    mutate_fn = Keyword.get(opts, :mutation_type, &Toolbox.Mutation.scramble/2)
+    mutate_fn = Keyword.get(opts, :mutation_type, &Toolbox.Mutation.bit_flip/2)
     mutation_rate = Keyword.get(opts, :mutation_rate, 0.05)
 
     population
     |> Enum.map(fn c ->
       if :rand.uniform() < mutation_rate do
-        apply(mutate_fn, [c, data])
+        repair_chromosome(apply(mutate_fn, [c, data]), data)
       else
         c
       end
