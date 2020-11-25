@@ -3,14 +3,18 @@ time_streaks = Scheduler.time_streaks()
 
 # Sample todos
 todos = Scheduler.todos()
-time_streak_weights = Core.TimeStreak.get_weights(time_streaks)
+time_streak_weights = Core.TimeStreak.get_weights(time_streaks, :matrix)
+todo_durations = Core.Todo.to_duration_matrix(todos)
+todo_priorities = Core.Todo.to_priority_matrix(todos)
 
 # Data to be accessed by the GA
 data = %{
   todos: todos,
   size: length(todos),
   time_streaks: time_streaks,
-  time_streak_weights: time_streak_weights
+  time_streak_weights: time_streak_weights,
+  durations: todo_durations,
+  priorities: todo_priorities,
 }
 
 IO.inspect(TTP.genotype(data))

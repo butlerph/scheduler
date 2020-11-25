@@ -1,11 +1,19 @@
 defmodule Core.TimeStreak do
-  alias Types.Range
+  # alias Types.Range
 
-  @spec get_weights([Range.t()]) :: [integer()]
-  def get_weights(time_streaks) when is_list(time_streaks) do
+  def get_weights(time_streaks, :list) when is_list(time_streaks) do
     Enum.map(time_streaks, fn {from, to} ->
       Timex.diff(to, from, :minutes)
     end)
+  end
+
+  def get_weights(time_streaks, :matrix) when is_list(time_streaks) do
+    weights =
+      Enum.map(time_streaks, fn {from, to} ->
+        Timex.diff(to, from, :minutes)
+      end)
+
+    Matrex.new([weights])
   end
 
   def count_unfilled_streaks(current_streak_weights, time_streak_weights) do

@@ -34,7 +34,7 @@ defmodule Genetic do
     else
       population
       |> select(opts)
-      |> crossover(opts)
+      |> crossover(data, opts)
       |> mutation(data, opts)
       |> evolve(generation + 1, best.fitness, temperature, problem, data, opts)
     end
@@ -55,8 +55,9 @@ defmodule Genetic do
     |> Enum.sort_by(&fitness_function.(&1, data), &>=/2)
   end
 
-  defp crossover(population, opts) do
+  defp crossover(population, data, opts) do
     cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.substring/3)
+    # repair = Keyword.get(opts, :repair_type, &Toolbox.Crossover.substring/3)
 
     population
     |> Enum.reduce([], fn {p1, p2}, acc ->
@@ -64,14 +65,16 @@ defmodule Genetic do
 
       [c1 | [c2 | acc]]
     end)
-    |> Enum.map(&repair_chromosome(&1))
+    |> Enum.map(&repair_chromosome(&1, data))
   end
 
-  defp repair_chromosome(chromosome) do
+  defp repair_chromosome(chromosome, data) do
     chromosome
     |> Repair.remove_duplicates()
+    |> Repair.remove_excess_durations(data)
 
-    # TODO: Repair excess weight
+    # TODO: Get the list of unused todos
+    # TODO: Try to reassign
     # TODO: Reassign unused todos First-Fit Decreasing
   end
 

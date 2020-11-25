@@ -23,7 +23,8 @@ defmodule Scheduler.MixProject do
     [
       {:timex, "~> 3.5"},
       {:scribe, "~> 0.10"},
-      {:matrex, "~> 0.6.8"}
+      {:matrex, "~> 0.6.8"},
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 end
