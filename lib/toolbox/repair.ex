@@ -80,7 +80,7 @@ defmodule Toolbox.Repair do
           priority = Matrex.at(p, 1, id)
           duration = Matrex.at(d, 1, id)
 
-          :math.pow(priority, duration)
+          :math.pow(priority, duration / 60)
         end,
         &>=/2
       )
