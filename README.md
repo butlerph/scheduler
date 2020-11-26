@@ -2,6 +2,11 @@
 
 Personal, automated weekly task scheduler used by Butler.
 
+This doesn't aim to be a framework for GAs in Elixir. If you're looking for one,
+you'll want to look into [Genex](https://github.com/seanmor5/genex). Butler
+essentially copied over the structure of it, except it's very specific to its
+use case only.
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed

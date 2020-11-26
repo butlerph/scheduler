@@ -8,7 +8,6 @@ todo_durations = Core.Todo.to_duration_matrix(todos)
 todo_priorities = Core.Todo.to_priority_matrix(todos)
 
 # Data to be accessed by the GA
-# TODO: Remove unnecessary data
 data = %{
   todo_ids: Enum.map(todos, fn %{id: id} -> id end),
   todos: todos,
@@ -20,23 +19,22 @@ data = %{
   priorities: todo_priorities,
 }
 
-opts = [
+elitist_opts = [
   population_size: 100,
-  # reinsertion_type: &Toolbox.Reinsertion.elitist/4,
-  # selection_type: &Toolbox.Selection.unique_tournament/4,
-  tournament_size: 5
+  reinsertion_type: &Toolbox.Reinsertion.elitist/4
 ]
-soln = Genetic.run(TTP, data, opts)
 
-IO.write("\n===========> BEST SOLUTION\n")
-IO.write("-----------> Fitness: #{soln.fitness}\n")
-IO.write("-----------> Genes\n")
+pure_opts = [
+  population_size: 100,
+  reinsertion_type: &Toolbox.Reinsertion.pure/4
+]
 
-soln.genes
-|> IO.inspect()
-|> Matrex.to_list_of_lists()
-|> IO.inspect()
-|> Core.Timetable.from_bit_timetable()
-# |> Core.Timetable.sort_todos(todos)
-|> IO.inspect()
-|> Core.Timetable.print(todos, time_streaks)
+Benchee.run(
+  %{
+    "Elitist" => fn data -> Genetic.run(TTP, data, elitist_opts) end,
+    "Pure" => fn data -> Genetic.run(TTP, data, pure_opts) end
+  },
+  inputs: %{
+    small: data,
+  }
+)
