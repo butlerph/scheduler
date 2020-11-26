@@ -32,18 +32,35 @@ defmodule Genetic do
     if problem.terminate?(population, generation, temperature) do
       best
     else
-      population
-      |> select(opts)
-      |> crossover(data, opts)
+      {parents, leftover} = select(population, opts)
+      children = crossover(parents, data, opts)
+
+      reinsertion(parents, children, leftover, opts)
       |> mutation(data, opts)
       |> evolve(generation + 1, best.fitness, temperature, problem, data, opts)
     end
   end
 
-  defp select(population, _opts) do
-    population
-    |> Enum.chunk_every(2)
-    |> Enum.map(&List.to_tuple(&1))
+  defp select(population, opts) do
+    select_fn = Keyword.get(opts, :selection_type, &Toolbox.Selection.natural/3)
+    select_rate = Keyword.get(opts, :selection_rate, 0.8)
+
+    n = round(length(population) * select_rate)
+    n = if rem(n, 2) == 0, do: n, else: n + 1
+
+    parents = apply(select_fn, [population, n, opts])
+
+    leftover =
+      population
+      |> MapSet.new()
+      |> MapSet.difference(MapSet.new(parents))
+
+    {parents, MapSet.to_list(leftover)}
+  end
+
+  defp reinsertion(parents, offspring, leftover, opts) do
+    reinsert_fn = Keyword.get(opts, :reinsertion_type, &Toolbox.Reinsertion.pure/4)
+    apply(reinsert_fn, [parents, offspring, leftover, opts])
   end
 
   defp evaluate(population, fitness_function, data, _opts) do
@@ -55,10 +72,12 @@ defmodule Genetic do
     |> Enum.sort_by(&fitness_function.(&1, data), &>=/2)
   end
 
-  defp crossover(population, data, opts) do
+  defp crossover(parents, data, opts) do
     cross = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.substring/3)
 
-    population
+    parents
+    |> Enum.chunk_every(2)
+    |> Enum.map(&List.to_tuple(&1))
     |> Enum.reduce([], fn {p1, p2}, acc ->
       {c1, c2} = apply(cross, [p1, p2, %{}])
 

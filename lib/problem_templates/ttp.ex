@@ -40,7 +40,6 @@ defmodule TTP do
 
   @impl true
   def terminate?([_best | _], generation, temperature) do
-    # temperature < 25 || generation == 1000
-    generation == 1000
+    temperature < 25 || generation == 1000
   end
 end
