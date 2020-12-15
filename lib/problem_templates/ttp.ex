@@ -27,11 +27,7 @@ defmodule TTP do
 
     for row <- 1..rows do
       for col <- 1..cols do
-        %{priority: p, duration: w} =
-          todos
-          |> Enum.find(fn t ->
-            t.id == col
-          end)
+        %{priority: p, duration: w} = Enum.at(todos, col - 1)
 
         p_val =
           case p do
@@ -41,7 +37,10 @@ defmodule TTP do
             :high -> 4
           end
 
-        (rows + 1 - row) * (Matrex.at(chromosome.genes, row, col) * :math.pow(p_val, w / 60))
+        score =
+          (rows + 1 - row) * (Matrex.at(chromosome.genes, row, col) * :math.pow(p_val, w / 60))
+
+        score
       end
       |> Enum.sum()
     end

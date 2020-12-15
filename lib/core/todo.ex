@@ -1,6 +1,6 @@
 defmodule Core.Todo do
   def get_todo(todos, todo_id) do
-    Enum.find(todos, fn t -> t.id == todo_id end)
+    Enum.at(todos, todo_id)
   end
 
   def update_todo(todos, todo_id, todo_attrs \\ %{}) do

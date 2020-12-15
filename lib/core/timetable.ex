@@ -67,23 +67,23 @@ defmodule Core.Timetable do
   def from_schedule(timetable, todos, time_streaks) do
     timetable
     |> Enum.with_index()
-    |> Enum.map(fn {streak_todos, index} ->
+    |> Enum.map(fn {streak_todos, streak_index} ->
       {todos, _} =
-        case Enum.at(time_streaks, index) do
+        case Enum.at(time_streaks, streak_index) do
           nil ->
-            raise "Time streak does not exist given the index #{index}"
+            raise "Time streak does not exist given the streak_index #{streak_index}"
 
           {from, _to} ->
             Enum.reduce(streak_todos, {[], 0}, fn
               todo_id, {curr_streak_todos, offset} ->
                 duration_offset = Timex.Duration.from_minutes(offset)
-                todo = Todo.get_todo(todos, todo_id)
+                todo = Todo.get_todo(todos, todo_id - 1)
                 duration = Timex.Duration.from_minutes(todo.duration)
 
                 from = Timex.add(from, duration_offset)
                 to = Timex.add(from, duration)
 
-                case Todo.update_todo(todos, todo_id, %{from: from, to: to}) do
+                case Todo.update_todo(todos, todo_id - 1, %{from: from, to: to}) do
                   {:error, _} ->
                     raise "Something went wrong in updating"
 
@@ -115,7 +115,7 @@ defmodule Core.Timetable do
 
   def get_streak_capacity(streak, todos) do
     Enum.map(streak, fn todo_id ->
-      todo = Todo.get_todo(todos, todo_id)
+      todo = Todo.get_todo(todos, todo_id - 1)
 
       todo.duration
     end)
@@ -143,9 +143,17 @@ defmodule Core.Timetable do
       Enum.sort_by(
         streak,
         fn todo_id ->
-          %{priority: p} = Todo.get_todo(todos, todo_id)
+          %{priority: p, duration: d} = Todo.get_todo(todos, trunc(todo_id - 1))
 
-          p
+          p_val =
+            case p do
+              :none -> 1
+              :low -> 2
+              :medium -> 3
+              :high -> 4
+            end
+
+          :math.pow(p_val, d / 60)
         end,
         :desc
       )
