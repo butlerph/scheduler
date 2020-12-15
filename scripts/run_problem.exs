@@ -41,4 +41,5 @@ soln.genes
 |> Core.Timetable.from_bit_timetable()
 |> Core.Timetable.sort_todos(todos)
 |> IO.inspect()
-|> Core.Timetable.print(todos, time_streaks)
+|> Core.Timetable.from_schedule(todos, time_streaks, true)
+# |> IO.inspect()

@@ -64,7 +64,7 @@ defmodule Core.Timetable do
   @doc """
   Synchronizes the result of the GA with the todos
   """
-  def from_schedule(timetable, todos, time_streaks) do
+  def from_schedule(timetable, todos, time_streaks, pair? \\ false) do
     timetable
     |> Enum.with_index()
     |> Enum.map(fn {streak_todos, streak_index} ->
@@ -83,13 +83,17 @@ defmodule Core.Timetable do
                 from = Timex.add(from, duration_offset)
                 to = Timex.add(from, duration)
 
-                case Todo.update_todo(todos, todo_id - 1, %{start: from}) do
+                with false <- pair?,
+                     {:ok, new_todo} <- Todo.update_todo(todos, todo_id - 1, %{start: from}) do
+                  new_curr_streak_todos = curr_streak_todos ++ [new_todo]
+                  {new_curr_streak_todos, offset + Timex.diff(to, from, :minutes)}
+                else
                   {:error, _} ->
                     raise "Something went wrong in updating"
 
-                  {:ok, new_todo} ->
-                    new_curr_streak_todos = curr_streak_todos ++ [new_todo]
-                    {new_curr_streak_todos, offset + Timex.diff(to, from, :minutes)}
+                  true ->
+                    {[{todo, %{start: from}} | curr_streak_todos],
+                     offset + Timex.diff(to, from, :minutes)}
                 end
             end)
         end

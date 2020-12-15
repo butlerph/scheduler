@@ -22,7 +22,7 @@ defmodule Scheduler.MixProject do
   defp deps do
     [
       {:timex, "~> 3.5"},
-      {:scribe, "~> 0.10"},
+      {:scribe, "~> 0.10", only: :dev},
       {:matrex, "~> 0.6.8"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:benchee, "~> 1.0", only: :dev}
