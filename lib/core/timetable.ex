@@ -12,21 +12,21 @@ defmodule Core.Timetable do
   def populate(
         timetable,
         unassigned_todos,
-        %{time_streak_weights: tsw, durations: d} = data
+        %{time_streak_durations: tsd, durations: d} = data
       ) do
     {rows, _cols} = Matrex.size(timetable)
 
     Enum.reduce(unassigned_todos, timetable, fn
       todo_id, new_tt ->
-        todo_weight = Matrex.at(d, 1, todo_id)
+        todo_duration = Matrex.at(d, 1, todo_id)
 
         Enum.reduce_while(1..rows, new_tt, fn row_num, new_tt ->
-          max_capacity = Matrex.at(tsw, 1, row_num)
-          current_streak_weight = get_streak_weight(new_tt, row_num, data)
-          allowance = max_capacity - current_streak_weight
+          max_capacity = Matrex.at(tsd, 1, row_num)
+          current_streak_duration = get_streak_duration(new_tt, row_num, data)
+          allowance = max_capacity - current_streak_duration
 
           cond do
-            todo_weight <= allowance ->
+            todo_duration <= allowance ->
               new_tt = Matrex.set(new_tt, row_num, todo_id, 1)
               {:halt, new_tt}
 
@@ -152,7 +152,7 @@ defmodule Core.Timetable do
     end)
   end
 
-  def get_streak_weight(timetable, row, %{durations: d}) do
+  def get_streak_duration(timetable, row, %{durations: d}) do
     {_, cols} = Matrex.size(timetable)
 
     Matrex.submatrix(timetable, row..row, 1..cols)
@@ -164,8 +164,8 @@ defmodule Core.Timetable do
       {0.0, _}, acc ->
         acc
     end)
-    |> Enum.reduce(0, fn todo_id, weight_score ->
-      weight_score + Matrex.at(d, 1, todo_id)
+    |> Enum.reduce(0, fn todo_id, duration_score ->
+      duration_score + Matrex.at(d, 1, todo_id)
     end)
   end
 end
