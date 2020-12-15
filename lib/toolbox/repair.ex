@@ -35,7 +35,7 @@ defmodule Toolbox.Repair do
   """
   def remove_excess_durations(
         %{genes: genes} = chromosome,
-        %{durations: durations, time_streak_weights: tsw} = data
+        %{durations: durations, time_streak_durations: tsw} = data
       ) do
     {rows, cols} = Matrex.size(genes)
 

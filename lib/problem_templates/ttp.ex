@@ -27,7 +27,7 @@ defmodule TTP do
 
     for row <- 1..rows do
       for col <- 1..cols do
-        %{priority: p, weight: w} =
+        %{priority: p, duration: w} =
           todos
           |> Enum.find(fn t -> t.id == col end)
 

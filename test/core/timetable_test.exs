@@ -7,13 +7,13 @@ defmodule TimetableTest do
       time_streaks = Scheduler.time_streaks()
 
       todos = Scheduler.todos()
-      time_streak_weights = Core.TimeStreak.get_weights(time_streaks, :matrix)
+      time_streak_durations = Core.TimeStreak.get_durations(time_streaks, :matrix)
       todo_durations = Core.Todo.to_duration_matrix(todos)
       todo_priorities = Core.Todo.to_priority_matrix(todos)
 
       data = %{
         todo_ids: Enum.map(todos, fn %{id: id} -> id end),
-        time_streak_weights: time_streak_weights,
+        time_streak_durations: time_streak_durations,
         durations: todo_durations
       }
 
