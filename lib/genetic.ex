@@ -21,11 +21,11 @@ defmodule Genetic do
     population = evaluate(population, &problem.fitness_function/2, data, opts)
     best = hd(population)
 
-    gen_str = Integer.to_string(generation)
-    fitness_str = Float.to_string(best.fitness)
-    str = IO.iodata_to_binary(["\r[", gen_str, " Current best ", fitness_str])
+    # gen_str = Integer.to_string(generation)
+    # fitness_str = Float.to_string(best.fitness)
+    # str = IO.iodata_to_binary(["\r[", gen_str, " Current best ", fitness_str])
 
-    IO.write(str)
+    # IO.write(str)
 
     temperature = (1 - cool_rate) * (temperature + (best.fitness - last_max_fitness))
 

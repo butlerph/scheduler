@@ -11,22 +11,30 @@ defmodule Toolbox.Repair do
     {rows, cols} = Matrex.size(genes)
 
     new_genes =
-      Enum.reduce(1..cols, genes, fn
-        col_num, genes ->
-          id_col = Matrex.submatrix(genes, 1..rows, col_num..col_num)
-
-          case Matrex.find(id_col, 1) do
-            nil ->
-              genes
-
-            {m_row, _m_col} ->
-              genes
-              |> Matrex.set_column(col_num, Matrex.zeros(rows, 1))
-              |> Matrex.set(m_row, col_num, 1)
-          end
+      1..cols
+      |> Enum.map(fn col_num ->
+        Task.async(fn ->
+          remove_col_duplicate(genes, rows, col_num)
+        end)
       end)
+      |> Enum.map(&Task.await/1)
+      |> Matrex.concat()
 
     %{chromosome | genes: new_genes}
+  end
+
+  defp remove_col_duplicate(genes, rows, col_num) do
+    id_col = Matrex.submatrix(genes, 1..rows, col_num..col_num)
+
+    case Matrex.find(id_col, 1) do
+      nil ->
+        id_col
+
+      {m_row, _m_col} ->
+        rows
+        |> Matrex.zeros(1)
+        |> Matrex.set(m_row, 1, 1)
+    end
   end
 
   @doc """
