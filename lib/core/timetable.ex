@@ -83,7 +83,7 @@ defmodule Core.Timetable do
                 from = Timex.add(from, duration_offset)
                 to = Timex.add(from, duration)
 
-                case Todo.update_todo(todos, todo_id - 1, %{from: from, to: to}) do
+                case Todo.update_todo(todos, todo_id - 1, %{start: from}) do
                   {:error, _} ->
                     raise "Something went wrong in updating"
 
