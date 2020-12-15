@@ -35,7 +35,12 @@ defmodule Core.Todo do
   def to_priority_matrix(todos) do
     todos
     |> Enum.map(fn %{priority: p} ->
-      p
+      case p do
+        :none -> 1
+        :low -> 2
+        :medium -> 3
+        :high -> 4
+      end
     end)
     |> (fn x -> [x] end).()
     |> Matrex.new()

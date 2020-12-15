@@ -29,9 +29,19 @@ defmodule TTP do
       for col <- 1..cols do
         %{priority: p, duration: w} =
           todos
-          |> Enum.find(fn t -> t.id == col end)
+          |> Enum.find(fn t ->
+            t.id == col
+          end)
 
-        (rows + 1 - row) * (Matrex.at(chromosome.genes, row, col) * :math.pow(p, w / 60))
+        p_val =
+          case p do
+            :none -> 1
+            :low -> 2
+            :medium -> 3
+            :high -> 4
+          end
+
+        (rows + 1 - row) * (Matrex.at(chromosome.genes, row, col) * :math.pow(p_val, w / 60))
       end
       |> Enum.sum()
     end

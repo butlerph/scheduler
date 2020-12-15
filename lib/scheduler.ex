@@ -9,16 +9,16 @@ defmodule Scheduler do
   """
   def todos do
     [
-      %{id: 1, name: "CS280: Test Section 5", duration: 180, priority: 4},
-      %{id: 2, name: "CS210: Finish Week #1 HW", duration: 180, priority: 4},
-      %{id: 3, name: "Feed Hiro water", duration: 5, priority: 1},
-      %{id: 4, name: "Write TP #1", duration: 180, priority: 4},
-      %{id: 5, name: "CS280: Study week topic", duration: 240, priority: 4},
-      %{id: 6, name: "Study Haskell", duration: 120, priority: 2},
-      %{id: 7, name: "Write TP #2", duration: 180, priority: 3},
-      %{id: 8, name: "Read Pragmatic Programmer Book", duration: 60, priority: 4},
-      %{id: 9, name: "Sound the horn", duration: 1, priority: 1},
-      %{id: 10, name: "CS210: Prepare for final project", duration: 180, priority: 1}
+      %{id: 1, name: "CS280: Test Section 5", duration: 180, priority: :high},
+      %{id: 2, name: "CS210: Finish Week #1 HW", duration: 180, priority: :high},
+      %{id: 3, name: "Feed Hiro water", duration: 5, priority: :low},
+      %{id: 4, name: "Write TP #1", duration: 180, priority: :high},
+      %{id: 5, name: "CS280: Study week topic", duration: 240, priority: :high},
+      %{id: 6, name: "Study Haskell", duration: 120, priority: :low},
+      %{id: 7, name: "Write TP #2", duration: 180, priority: :medium},
+      %{id: 8, name: "Read Pragmatic Programmer Book", duration: 60, priority: :medium},
+      %{id: 9, name: "Sound the horn", duration: 1, priority: :none},
+      %{id: 10, name: "CS210: Prepare for final project", duration: 180, priority: :none}
     ]
   end
 
