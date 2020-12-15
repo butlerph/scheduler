@@ -1,8 +1,7 @@
 defmodule Toolbox.Reinsertion do
-  def pure(_parents, offspring, _leftovers, _opts), do: offspring
+  def pure(_parents, children, _leftovers, _opts), do: children
 
   def elitist(parents, offspring, leftovers, opts) do
-    # IO.inspect(parents, label: "Parents")
     survival_rate = Keyword.get(opts, :survival_rate, 0.2)
 
     old = parents ++ leftovers

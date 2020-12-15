@@ -78,7 +78,7 @@ defmodule Core.Timetable do
               todo_id, {curr_streak_todos, offset} ->
                 duration_offset = Timex.Duration.from_minutes(offset)
                 todo = Todo.get_todo(todos, todo_id)
-                duration = Timex.Duration.from_minutes(todo.weight)
+                duration = Timex.Duration.from_minutes(todo.duration)
 
                 from = Timex.add(from, duration_offset)
                 to = Timex.add(from, duration)
@@ -110,14 +110,14 @@ defmodule Core.Timetable do
 
     timetable
     |> from_schedule(todos, time_streaks)
-    |> Scribe.print(data: [:id, :name, :priority, :weight, :from, :to])
+    |> Scribe.print(data: [:id, :name, :priority, :duration, :from, :to])
   end
 
   def get_streak_capacity(streak, todos) do
     Enum.map(streak, fn todo_id ->
       todo = Todo.get_todo(todos, todo_id)
 
-      todo.weight
+      todo.duration
     end)
     |> Enum.sum()
   end

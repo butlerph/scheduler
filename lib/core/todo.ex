@@ -8,7 +8,7 @@ defmodule Core.Todo do
       nil ->
         {:error, "Todo does not exist"}
 
-      %Types.Todo{} = todo ->
+      todo ->
         {:ok, update(todo, todo_attrs)}
     end
   end
@@ -25,7 +25,7 @@ defmodule Core.Todo do
 
   def to_duration_matrix(todos) do
     todos
-    |> Enum.map(fn %{weight: w} ->
+    |> Enum.map(fn %{duration: w} ->
       w
     end)
     |> (fn x -> [x] end).()
